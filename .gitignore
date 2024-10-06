@@ -1,3 +1,5 @@
 **/.vscode
 *.pt
 **/__pycache__
+**/.ipynb_chekpoints
+trained_model/
