@@ -3,17 +3,24 @@ import lightning as L
 from model.residual_ghost_net import ResidualGhostUNet 
 from torchmetrics.image import StructuralSimilarityIndexMeasure 
 
+
+class Losses: 
+    def __init__(self) -> None:
+        self.ssim = StructuralSimilarityIndexMeasure(data_range=1.0) 
+    
+    def ssim_loss(self, preds, targets): 
+        return 1 - self.ssim(preds, targets)
+
 class ResUnetLightning(L.LightningModule): 
     def __init__(self, learning_rate : float = 1e-5): 
         super().__init__()
         self.learning_rate = learning_rate 
         self.model = ResidualGhostUNet()  
+
+        self.losses = Losses()
+
         self.save_hyperparameters()     
         
-        self.ssim = StructuralSimilarityIndexMeasure(data_range=1.0) 
-    
-    def ssim_loss(self, preds, targets): 
-        return 1 - self.ssim(preds, targets) 
     
     def training_step(self, batch, batch_idx):
         x, y = batch
@@ -21,7 +28,7 @@ class ResUnetLightning(L.LightningModule):
 
         y = y.unsqueeze(1)
 
-        loss = self.ssim_loss(prediction, y)
+        loss = self.losses.ssim_loss(prediction, y)
         self.log("ssim_train_loss", loss, on_epoch=True, on_step=False)
         return loss 
 
@@ -31,7 +38,7 @@ class ResUnetLightning(L.LightningModule):
 
         y = y.unsqueeze(1)
 
-        loss = self.ssim_loss(prediction, y)
+        loss = self.losses.ssim_loss(prediction, y)
         self.log("ssim_val_loss", loss, on_epoch=True, on_step=False)
 
     def configure_optimizers(self):
