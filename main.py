@@ -19,7 +19,7 @@ checkpoint = ModelCheckpoint(
 )
 
 # Wandb Config
-wandb.login(key="06ee7ca7307838ddb249c4cda6662d79e7d7d16d")  
+wandb.login(key="XXXXXXXXXXXXXXXXXXXXX")  
 wandb_logger = WandbLogger(project="Jurnal_ResGhostUnet_Depth", log_model="all")   
 
 # Dataset
